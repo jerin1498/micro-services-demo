@@ -1,0 +1,54 @@
+import mongoose from 'mongoose';
+import request from 'supertest';
+import { app } from '../../app';
+import { Order } from '../../models/orders';
+import { Ticket } from '../../models/ticket';
+import { OrderStatus } from '@jhticketss/common';
+
+
+it('return a error if the ticket does not exist', async () => {
+  const ticketId = new mongoose.Types.ObjectId()
+  await request(app)
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId })
+    .expect(404)
+})
+
+it('return error if the ticket is already booked', async () => {
+  const ticket = Ticket.build({
+    title: 'Concert',
+    price: 20
+  })
+  await ticket.save()
+
+  const order = Order.build({
+    ticket,
+    userId: 'jasfhdasffdf',
+    status: OrderStatus.Created,
+    expiresAt: new Date()
+  })
+  await order.save()
+
+  await request(app)
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(400)
+})
+
+it('return a ticket', async () => {
+  const ticket = Ticket.build({
+    title: 'Concert',
+    price: 20
+  })
+  await ticket.save()
+
+  await request(app)
+    .post('/api/orders')
+    .set('Cookie', global.signin())
+    .send({ ticketId: ticket.id })
+    .expect(201)
+})
+
+it.todo('emit an order created event')

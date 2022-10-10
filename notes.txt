@@ -1,0 +1,12 @@
+aws configuration
+
+----------
+command: aws eks --region nameOFtheRegion update-kubeconfig --name nameOFtheClusterYouCreatedOnAws
+usage: to set the kubectl to point aws cluster
+-----------
+
+
+----------
+command: kubectl config use-context docker-desktop
+usage: to set the kubectl to point local machine
+-----------
