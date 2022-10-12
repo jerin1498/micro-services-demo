@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { app } from './app'
 import { natsWrapper } from './nats-wrapper';
+import { TicketUpdatedListerner } from './events/listeners/ticket-updated-listener';
+import { TicketCreatedListerner } from './events/listeners/ticket-created-listener';
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error('JWT_KEY must be defind')
@@ -17,6 +19,9 @@ const start = async () => {
     })
     process.on('SIGINT', () => natsWrapper.client.close())
     process.on('SIGTERM', () => natsWrapper.client.close())
+    // initating event listener
+    new TicketCreatedListerner(natsWrapper.client).listen()
+    new TicketUpdatedListerner(natsWrapper.client).listen()
     await mongoose.connect(process.env.MONGO_URI) //from mongo docker container
     console.log('connected to mongo db')
   } catch (err) {
