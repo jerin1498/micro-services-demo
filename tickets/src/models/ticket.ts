@@ -3,17 +3,18 @@ import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // for checking the ticket attributes
 interface TicketAttrs {
-  title: string,
-  price: number,
+  title: string;
+  price: number;
   userId: string
 }
 
 // used for mongoose document 
 interface TicketDoc extends mongoose.Document {
-  title: string,
-  price: number,
-  userId: string,
-  version: number
+  title: string;
+  price: number;
+  userId: string;
+  version: number;
+  orderId?: string;
 }
 
 // used for mongoose model
@@ -34,6 +35,9 @@ const ticketSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true
+  },
+  orderId: {
+    type: String
   }
 }, {
   toJSON: {
