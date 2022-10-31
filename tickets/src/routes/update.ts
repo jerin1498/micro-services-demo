@@ -4,7 +4,8 @@ import {
   validateRequest,
   NotFoundError,
   requireAuth,
-  NotAuthorizedError
+  NotAuthorizedError,
+  BadRequestError
 } from '@jhticketss/common';
 import { Ticket } from '../models/ticket';
 import { natsWrapper } from '../nats-wrapper';
@@ -27,6 +28,7 @@ router.put('/api/tickets/:id',
   async (req: Request, res: Response) => {
     const ticket = await Ticket.findById(req.params.id)
     if (!ticket) throw new NotFoundError()
+    if (ticket.orderId) throw new BadRequestError('cannot update a reserved ticket')
     if (ticket.userId !== req.currentUser!.id) throw new NotAuthorizedError()
     ticket.set({
       title: req.body.title,
