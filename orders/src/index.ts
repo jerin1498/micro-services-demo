@@ -3,6 +3,7 @@ import { app } from './app'
 import { natsWrapper } from './nats-wrapper';
 import { TicketUpdatedListerner } from './events/listeners/ticket-updated-listener';
 import { TicketCreatedListerner } from './events/listeners/ticket-created-listener';
+import { ExpirationCompleteListiner } from './events/listeners/expiration-complete-listiner';
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error('JWT_KEY must be defind')
@@ -22,6 +23,7 @@ const start = async () => {
     // initating event listener
     new TicketCreatedListerner(natsWrapper.client).listen()
     new TicketUpdatedListerner(natsWrapper.client).listen()
+    new ExpirationCompleteListiner(natsWrapper.client).listen()
     await mongoose.connect(process.env.MONGO_URI) //from mongo docker container
     console.log('connected to mongo db')
   } catch (err) {
